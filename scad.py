@@ -14,8 +14,8 @@ def make_scad(**kwargs):
     if True:
         filter = ""
         #filter = "drive_shaft_output_inner"
-        #filter = "inner_rotor_lobes"
-        filter = "outer_rotor_main"
+        filter = "inner_rotor_main"
+        #filter = "outer_rotor_main"
         #filter = "outer_rotor_outer_drive_shaft"
 
         #kwargs["save_type"] = "none"
@@ -46,6 +46,9 @@ def make_scad(**kwargs):
         kwargs["thickness_inner_rotor"] = thickness_inner_rotor
         thickness_outer_rotor = 12
         kwargs["thickness_outer_rotor"] = thickness_outer_rotor
+        # output shaft
+        output_shaft_pin_distance = [15,15] # oobb_3 at 45 degrees
+        kwargs["output_shaft_pin_distance"] = output_shaft_pin_distance
 
     
     # declare parts
@@ -81,7 +84,7 @@ def make_scad(**kwargs):
         p3 = copy.deepcopy(kwargs)
         p3["thickness"] = thickness_inner_rotor
         part["kwargs"] = p3
-        part["name"] = "inner_rotor_lobes"
+        part["name"] = "inner_rotor_main"
         parts.append(part)
 
         part = copy.deepcopy(part_default)
@@ -413,7 +416,11 @@ def get_outer_rotor_outer_drive_shaft(thing, **kwargs):
         pos1 = copy.deepcopy(pos)
         pos1[2] += -depth/2 + depth  - shift_screw
         xy = []
-        shift = 15.556
+        outer_rotor_outer_drive_shaft = kwargs.get("outer_rotor_outer_drive_shaft", 0)
+        if outer_rotor_outer_drive_shaft == 21.213 * 2:
+            shift = 15            
+        else:
+            input("error this needs recalculating, this is bassed on 3x3 the right distance apart")
         xy.append([shift,shift,0])
         xy.append([-shift,shift,0])
         xy.append([-shift,-shift,0])
@@ -586,7 +593,7 @@ def get_outer_rotor_main(thing, **kwargs):
 
     
 
-def get_inner_rotor_lobes(thing, **kwargs):
+def get_inner_rotor_main(thing, **kwargs):
   
     width = kwargs.get("width", 12)
     pos = kwargs.get("pos", [0, 0, 0])
@@ -597,7 +604,7 @@ def get_inner_rotor_lobes(thing, **kwargs):
     depth = kwargs.get("thickness", 8)
     prepare_print = kwargs.get("prepare_print", True)
 
-    output_shaft_pin_distance = 44
+    
 
     #add _cycloid
     p3 = copy.deepcopy(kwargs)
@@ -626,18 +633,23 @@ def get_inner_rotor_lobes(thing, **kwargs):
     bearing = False
 
     #add output shaft bearings
+    output_shaft_pin_distance = kwargs.get("output_shaft_pin_distance", 0)
     if True:
         poss = []
         pos1 = copy.deepcopy(pos)    
         pos1[2] += 0
         pos11 = copy.deepcopy(pos1)
-        pos11[0] += output_shaft_pin_distance/2
+        pos11[0] += output_shaft_pin_distance[0]/2
+        pos11[1] += output_shaft_pin_distance[1]/2
         pos12 = copy.deepcopy(pos1)
         pos12[0] += -output_shaft_pin_distance/2
+        pos12[1] += -output_shaft_pin_distance/2
         pos13 = copy.deepcopy(pos1)
         pos13[1] += output_shaft_pin_distance/2
+        pos13[0] += -output_shaft_pin_distance/2
         pos14 = copy.deepcopy(pos1)
         pos14[1] += -output_shaft_pin_distance/2
+        pos14[0] += output_shaft_pin_distance/2
         poss.append(pos11)
         poss.append(pos12)
         poss.append(pos13)
@@ -663,31 +675,15 @@ def get_inner_rotor_lobes(thing, **kwargs):
         oobb_base.append_full(thing,**p3)
 
     #add connecting screws
-    offset = 15
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "n"
-    p3["shape"] = f"oobb_screw_countersunk"
-    p3["radius_name"] = "m3"
-    p3["depth"] = depth
-    p3["nut_include"] = True
-    if True:
-        poss  = []
-        pos1 = copy.deepcopy(pos)
-        pos1[2] += -depth/2
-        pos11 = copy.deepcopy(pos1)
-        pos11[0] += offset
-        pos11[1] += offset
-
-        pos12 = copy.deepcopy(pos1)
-        pos12[0] += -offset
-        pos12[1] += -offset
-        poss.append(pos11)
-        poss.append(pos12)
-    p3["pos"] = poss
-    p3["zz"] = "bottom"
-    p3["overhang"] = True
-    #p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
+    b = "6705"
+    w = 3
+    h = 3    
+    t = 9        
+    size="oobb"
+    item = {"type": "bearing_plate", "width": w, "height": h, "thickness": t, "bearing": b,"size": size, "extra":"missing_middle_3_mm"}
+    thing_2 = oobb_base.get_thing_from_dict(item)
+    thing["components"].append(thing_2["components"])
+    
 
     #ro 180 on y and do on y
     p3 = copy.deepcopy(p3)
