@@ -18,12 +18,12 @@ def make_scad(**kwargs):
         #filter = "outer_rotor_main"
         #filter = "outer_rotor_outer_drive_shaft"
 
-        #kwargs["save_type"] = "none"
+        kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
         
         kwargs["overwrite"] = True
         
-        #kwargs["modes"] = ["3dpr", "laser", "true"]
+        #kwargs["modes"] = ["3dpr", "laser", "true"]        
         #kwargs["modes"] = ["3dpr"]
         kwargs["modes"] = ["laser"]
 
@@ -82,7 +82,7 @@ def make_scad(**kwargs):
 
         part = copy.deepcopy(part_default)
         p3 = copy.deepcopy(kwargs)
-        p3["thickness"] = thickness_inner_rotor
+        p3["thickness"] = 3
         part["kwargs"] = p3
         part["name"] = "inner_rotor_main"
         parts.append(part)
@@ -639,17 +639,17 @@ def get_inner_rotor_main(thing, **kwargs):
         pos1 = copy.deepcopy(pos)    
         pos1[2] += 0
         pos11 = copy.deepcopy(pos1)
-        pos11[0] += output_shaft_pin_distance[0]/2
-        pos11[1] += output_shaft_pin_distance[1]/2
+        pos11[0] += output_shaft_pin_distance[0]
+        pos11[1] += output_shaft_pin_distance[1]
         pos12 = copy.deepcopy(pos1)
-        pos12[0] += -output_shaft_pin_distance/2
-        pos12[1] += -output_shaft_pin_distance/2
+        pos12[0] += -output_shaft_pin_distance[0]
+        pos12[1] += -output_shaft_pin_distance[1]
         pos13 = copy.deepcopy(pos1)
-        pos13[1] += output_shaft_pin_distance/2
-        pos13[0] += -output_shaft_pin_distance/2
+        pos13[1] += output_shaft_pin_distance[1]
+        pos13[0] += -output_shaft_pin_distance[0]
         pos14 = copy.deepcopy(pos1)
-        pos14[1] += -output_shaft_pin_distance/2
-        pos14[0] += output_shaft_pin_distance/2
+        pos14[1] += -output_shaft_pin_distance[1]
+        pos14[0] += output_shaft_pin_distance[0]
         poss.append(pos11)
         poss.append(pos12)
         poss.append(pos13)
@@ -680,31 +680,19 @@ def get_inner_rotor_main(thing, **kwargs):
     h = 3    
     t = 9        
     size="oobb"
-    item = {"type": "bearing_plate", "width": w, "height": h, "thickness": t, "bearing": b,"size": size, "extra":"missing_middle_3_mm"}
+    item = {"type": "bearing_plate", 
+            "width": w, 
+            "height": h, 
+            "thickness": t, 
+            "bearing": b,
+            "size": size, 
+            "extra":"missing_middle_3_mm",
+            "just_screws": True}
     thing_2 = oobb_base.get_thing_from_dict(item)
     thing["components"].append(thing_2["components"])
     
 
-    #ro 180 on y and do on y
-    p3 = copy.deepcopy(p3)
-    p3["rot"] = [0,180,0]
-    p3["zz"] = "top"
-    poss = []
-    if True:
-        pos1 = copy.deepcopy(pos)
-        pos1[2] += -depth/2
-        pos11 = copy.deepcopy(pos1)
-        pos11[0] += -offset
-        pos11[1] += offset
-
-        pos12 = copy.deepcopy(pos1)
-        pos12[0] += offset
-        pos12[1] += -offset
-        poss.append(pos11)
-        poss.append(pos12)
-    p3["pos"] = poss
-    #p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
+    
 
 
     if prepare_print:
