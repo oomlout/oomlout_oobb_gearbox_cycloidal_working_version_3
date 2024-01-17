@@ -14,9 +14,11 @@ def make_scad(**kwargs):
     if True:
         filter = ""
         #filter = "drive_shaft_output_inner"
-        filter = "inner_rotor_main"
+        #filter = "inner_rotor_main"
         #filter = "outer_rotor_main"
         #filter = "outer_rotor_outer_drive_shaft"
+        filter = "inner_rotor_drive_shaft"
+        #filter = ["outer_rotor_outer_drive_shaft", "outer_rotor_inner_drive_shaft", "inner_rotor_drive_shaft"]
 
         kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
@@ -42,7 +44,7 @@ def make_scad(**kwargs):
         kwargs["radius_offset"] = 0.75
         kwargs["radius_output_drive_pins"] = 2.5
         #size ones
-        thickness_inner_rotor = 8
+        thickness_inner_rotor = 9
         kwargs["thickness_inner_rotor"] = thickness_inner_rotor
         thickness_outer_rotor = 12
         kwargs["thickness_outer_rotor"] = thickness_outer_rotor
@@ -97,8 +99,14 @@ def make_scad(**kwargs):
     #make the parts
     if True:
         for part in parts:
-            name = part.get("name", "default")
-            if filter in name:
+            name = part.get("name", "default")            
+            if not isinstance(filter, list):
+                filter = [filter]
+            generate = False
+            for f in filter:
+                if f in name:
+                    generate = True
+            if generate:
                 print(f"making {part['name']}")
                 make_scad_generic(part)            
                 print(f"done {part['name']}")
@@ -416,15 +424,13 @@ def get_outer_rotor_outer_drive_shaft(thing, **kwargs):
         pos1 = copy.deepcopy(pos)
         pos1[2] += -depth/2 + depth  - shift_screw
         xy = []
-        outer_rotor_outer_drive_shaft = kwargs.get("outer_rotor_outer_drive_shaft", 0)
-        if outer_rotor_outer_drive_shaft == 21.213 * 2:
-            shift = 15            
-        else:
-            input("error this needs recalculating, this is bassed on 3x3 the right distance apart")
-        xy.append([shift,shift,0])
-        xy.append([-shift,shift,0])
-        xy.append([-shift,-shift,0])
-        xy.append([shift,-shift,0])
+        outer_rotor_outer_drive_shaft = kwargs.get("output_shaft_pin_distance", 0)
+        shift = outer_rotor_outer_drive_shaft
+        
+        xy.append([shift[0],shift[1],0])
+        xy.append([-shift[0],shift[1],0])
+        xy.append([-shift[0],-shift[1],0])
+        xy.append([shift[0],-shift[1],0])
         for p in xy:
             pos11 = copy.deepcopy(pos1)
             pos11[0] += p[0]
