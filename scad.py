@@ -24,8 +24,8 @@ def make_scad(**kwargs):
         kwargs["overwrite"] = True
         
         #kwargs["modes"] = ["3dpr", "laser", "true"]        
-        #kwargs["modes"] = ["3dpr"]
-        kwargs["modes"] = ["laser"]
+        kwargs["modes"] = ["3dpr"]
+        #kwargs["modes"] = ["laser"]
 
     # default variables
     if True:
@@ -695,7 +695,7 @@ def get_inner_rotor_main(thing, **kwargs):
     
 
 
-    if prepare_print:
+    if False: #prepare_print:
         # add copy with a twist
         #put into a rotation object
         components_second = copy.deepcopy(thing["components"])
