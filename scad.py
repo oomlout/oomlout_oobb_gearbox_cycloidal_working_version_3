@@ -17,17 +17,18 @@ def make_scad(**kwargs):
         #filter = "inner_rotor_main"
         #filter = "outer_rotor_main"
         #filter = "outer_rotor_outer_drive_shaft"
-        filter = "inner_rotor_drive_shaft"
+        #filter = "inner_rotor_drive_shaft"
+        filter = "outer_rotor_spacer"
         #filter = ["outer_rotor_outer_drive_shaft", "outer_rotor_inner_drive_shaft", "inner_rotor_drive_shaft"]
 
-        kwargs["save_type"] = "none"
+        #kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
         
         kwargs["overwrite"] = True
         
         #kwargs["modes"] = ["3dpr", "laser", "true"]        
-        kwargs["modes"] = ["3dpr"]
-        #kwargs["modes"] = ["laser"]
+        #kwargs["modes"] = ["3dpr"]
+        kwargs["modes"] = ["laser"]
 
     # default variables
     if True:
@@ -94,6 +95,14 @@ def make_scad(**kwargs):
         p3["thickness"] = 3 
         part["kwargs"] = p3
         part["name"] = "outer_rotor_main"
+        parts.append(part)
+
+        
+        part = copy.deepcopy(part_default)
+        p3 = copy.deepcopy(kwargs)
+        p3["thickness"] = 3 
+        part["kwargs"] = p3
+        part["name"] = "outer_rotor_spacer"
         parts.append(part)
         
     #make the parts
@@ -597,7 +606,69 @@ def get_outer_rotor_main(thing, **kwargs):
     #p3["m"] = "#"
     oobb_base.append_full(thing,**p3)
 
+def get_outer_rotor_spacer(thing, **kwargs):
+ 
+    depth = kwargs.get("thickness", 3)
+    pos = kwargs.get("pos", [0, 0, 0])
+    #pos = copy.deepcopy(pos)
+    #pos[2] += -20
+
+    #add main_cylinder
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"oobb_cylinder"
+    p3["radius"] = 55/2
+    p3["depth"] = depth
+    #p3["m"] = "#"
+    pos1 = copy.deepcopy(pos)     
+    p3["pos"] = pos1
+    oobb_base.append_full(thing,**p3)
+
+    #add dount hole
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_cylinder"
+    p3["radius"] = 28/2
+    p3["depth"] = depth
+    #p3["m"] = "#"
+    pos1 = copy.deepcopy(pos)     
+    p3["pos"] = pos1
+    oobb_base.append_full(thing,**p3)
+
+
     
+
+    #add bearing plate connection
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_hole"
+    p3["radius_name"] = "m3"    
+    poss = []
+    spacing = 22.5
+    if True:
+        pos1 = copy.deepcopy(pos)
+        pos1[2] += depth
+        pos11 = copy.deepcopy(pos1)
+        pos11[0] += spacing
+        pos11[1] += 0
+        poss.append(pos11)
+        pos12 = copy.deepcopy(pos1)
+        pos12[0] += -spacing
+        pos12[1] += 0
+        poss.append(pos12)
+        pos13 = copy.deepcopy(pos1)
+        pos13[0] += 0
+        pos13[1] += spacing
+        poss.append(pos13)
+        pos14 = copy.deepcopy(pos1)
+        pos14[0] += 0
+        pos14[1] += -spacing
+        poss.append(pos14)
+        
+    p3["pos"] = poss
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+
 
 def get_inner_rotor_main(thing, **kwargs):
   
