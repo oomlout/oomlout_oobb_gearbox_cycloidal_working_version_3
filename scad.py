@@ -628,7 +628,7 @@ def get_outer_rotor_spacer(thing, **kwargs):
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "n"
     p3["shape"] = f"oobb_cylinder"
-    p3["radius"] = 28/2
+    p3["radius"] = 30/2
     p3["depth"] = depth
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)     
@@ -644,12 +644,43 @@ def get_outer_rotor_spacer(thing, **kwargs):
     p3["shape"] = f"oobb_hole"
     p3["radius_name"] = "m3"    
     poss = []
+    spacing = [15.91,15.91]
+    if True:
+        pos1 = copy.deepcopy(pos)
+        pos1[2] += depth
+        pos11 = copy.deepcopy(pos1)
+        pos11[0] += spacing[0]
+        pos11[1] += spacing[1]
+        poss.append(pos11)
+        pos12 = copy.deepcopy(pos1)
+        pos12[0] += -spacing[0]
+        pos12[1] += -spacing[1]
+        poss.append(pos12)
+        pos13 = copy.deepcopy(pos1)
+        pos13[0] += spacing[0]
+        pos13[1] += -spacing[1]
+        poss.append(pos13)
+        pos14 = copy.deepcopy(pos1)
+        pos14[0] += -spacing[0]
+        pos14[1] += spacing[1]
+        poss.append(pos14)        
+    p3["pos"] = poss
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+
+    #add 12 mm spacer holes at 0,22.5 etc
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_hole"
+    p3["radius"] = 12/2
+    
+    poss = []
     spacing = 22.5
     if True:
         pos1 = copy.deepcopy(pos)
         pos1[2] += depth
         pos11 = copy.deepcopy(pos1)
-        pos11[0] += spacing
+        pos11[0] += spacing        
         pos11[1] += 0
         poss.append(pos11)
         pos12 = copy.deepcopy(pos1)
@@ -664,11 +695,9 @@ def get_outer_rotor_spacer(thing, **kwargs):
         pos14[0] += 0
         pos14[1] += -spacing
         poss.append(pos14)
-        
     p3["pos"] = poss
     #p3["m"] = "#"
     oobb_base.append_full(thing,**p3)
-
 
 def get_inner_rotor_main(thing, **kwargs):
   
